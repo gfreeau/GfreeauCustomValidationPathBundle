@@ -4,6 +4,12 @@
     "description": "This Symfony2 bundle provides a method for adding custom validation directories",
     "keywords": ["Symfony2", "validation", "custom"],
     "homepage": "https://github.com/gfreeau/GfreeauCustomValidationPathBundle",
+    "authors": [
+        {
+            "name": "Greg Freeman",
+            "homepage": "http://www.gregfreeman.org"
+        }
+    ],
     "license": "MIT",
     "require": {
         "php": ">=5.3.3",

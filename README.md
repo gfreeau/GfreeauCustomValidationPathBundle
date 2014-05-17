@@ -42,7 +42,7 @@ You will know if your validation files have been included by running:
 ./app/console container:debug --format=json --parameters
 ```
 
-look for the key validator.mapping.loader.xml_files_loader.mapping_files or validator.mapping.loader.yml_files_loader.mapping_files
+look for the key `validator.mapping.loader.xml_files_loader.mapping_files` or `validator.mapping.loader.yml_files_loader.mapping_files`
 
 Here is the example config for orm and serializer to go along with custom validation directories:
 

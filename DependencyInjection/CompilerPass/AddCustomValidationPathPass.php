@@ -30,6 +30,10 @@ class AddCustomValidationPathPass implements CompilerPassInterface
 
     private function processConfig(ContainerBuilder $container, array $config)
     {
+        if (!isset($config['directories'])) {
+            return;
+        }
+
         $requiredOptions = array('path', 'type', 'recursive');
         $requiredKeys = array_flip($requiredOptions);
         $requiredCount = count($requiredOptions);

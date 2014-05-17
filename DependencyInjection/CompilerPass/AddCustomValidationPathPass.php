@@ -10,12 +10,14 @@ use InvalidArgumentException;
 
 class AddCustomValidationPathPass implements CompilerPassInterface
 {
+    const CONFIG_NAME = 'gfreeau_custom_validation_path';
+
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
-        $configs = $container->getExtensionConfig('gfreeau_custom_validation_path');
+        $configs = $container->getExtensionConfig(self::CONFIG_NAME);
 
         if (empty($configs)) {
             return;
@@ -78,11 +80,11 @@ class AddCustomValidationPathPass implements CompilerPassInterface
     private function getValidatorFiles($path, $type, $recursive)
     {
         if (!is_dir($path)) {
-            throw new InvalidArgumentException('validation path does not exist');
+            throw new InvalidArgumentException(sprintf("%s: validation file path '%s' does not exist", self::CONFIG_NAME, $path));
         }
 
         if (!in_array($type, array('xml', 'yml'))) {
-            throw new InvalidArgumentException('invalid validation file type');
+            throw new InvalidArgumentException(sprintf("%s: invalid validation file type '%s'", self::CONFIG_NAME, $type));
         }
 
         $finder = new Finder();

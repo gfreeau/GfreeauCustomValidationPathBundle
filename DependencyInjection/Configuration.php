@@ -29,7 +29,7 @@ class Configuration implements ConfigurationInterface
                                 ->isRequired()
                             ->end()
                             ->enumNode('type')
-                                ->values(array('yml', 'xml'))
+                                ->values(array('yml', 'yaml', 'xml'))
                             ->end()
                             ->booleanNode('recursive')
                                 ->defaultTrue()

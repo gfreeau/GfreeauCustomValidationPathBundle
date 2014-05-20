@@ -45,7 +45,9 @@ class AddCustomValidationPathPass implements CompilerPassInterface
                 continue;
             }
 
-            $mappingFilesKey = 'validator.mapping.loader.'.$directory['type'].'_files_loader.mapping_files';
+            $directory['type'] = $this->getConfigExtension($directory['type']);
+
+            $mappingFilesKey = $this->getMappingKey($directory['type']);
 
             if (!$container->hasParameter($mappingFilesKey)) {
                 continue;
@@ -107,5 +109,27 @@ class AddCustomValidationPathPass implements CompilerPassInterface
         }
 
         return $files;
+    }
+
+    private function getMappingKey($extension)
+    {
+        if ('yml' == $extension) {
+            $extension = 'yaml';
+        }
+
+        return 'validator.mapping.loader.'.$extension.'_files_loader.mapping_files';
+    }
+
+    private function getConfigExtension($extension)
+    {
+        $extTranslations = array(
+            'yaml' => 'yml',
+        );
+
+        if (isset($extTranslations[$extension])) {
+            return $extTranslations[$extension];
+        }
+
+        return $extension;
     }
 }

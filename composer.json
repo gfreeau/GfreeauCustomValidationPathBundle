@@ -2,7 +2,7 @@
     "name": "gfreeau/custom-validation-path-bundle",
     "type": "symfony-bundle",
     "description": "This Symfony2 bundle provides a method for adding custom validation directories",
-    "keywords": ["Symfony2", "validation", "custom"],
+    "keywords": ["symfony2", "validation", "custom", "path", "directory"],
     "homepage": "https://github.com/gfreeau/GfreeauCustomValidationPathBundle",
     "authors": [
         {

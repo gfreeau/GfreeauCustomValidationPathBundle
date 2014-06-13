@@ -13,6 +13,11 @@ class AddCustomValidationPathPass implements CompilerPassInterface
     const CONFIG_NAME = 'gfreeau_custom_validation_path';
 
     /**
+     * @var ContainerBuilder $container
+     */
+    private $container;
+
+    /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
@@ -25,12 +30,26 @@ class AddCustomValidationPathPass implements CompilerPassInterface
 
         $configs = $container->getParameterBag()->resolveValue($configs);
 
+        $this->container = $container;
+
         foreach($configs as $config) {
-            $this->processConfig($container, $config);
+            $this->processConfig($config);
         }
     }
 
-    private function processConfig(ContainerBuilder $container, array $config)
+    /**
+     * @return ContainerBuilder
+     */
+    protected function getContainer()
+    {
+        if (!$this->container instanceof ContainerBuilder) {
+            throw new \LogicException('container is not set');
+        }
+
+        return $this->container;
+    }
+
+    protected function processConfig(array $config)
     {
         if (!isset($config['directories'])) {
             return;
@@ -47,29 +66,58 @@ class AddCustomValidationPathPass implements CompilerPassInterface
 
             $directory['type'] = $this->getConfigExtension($directory['type']);
 
-            $mappingFilesKey = $this->getMappingKey($directory['type']);
-
-            if (!$container->hasParameter($mappingFilesKey)) {
-                continue;
-            }
-
             $files = $this->getValidatorFiles($directory['path'], $directory['type'], $directory['recursive']);
 
             if (empty($files)) {
                 continue;
             }
 
-            foreach($files as $file) {
-                $container->addResource(new FileResource($file));
-            }
+            $this->addMappingFiles($directory['type'], $files);
+        }
+    }
 
-            $files = array_merge(
-                $container->getParameter($mappingFilesKey),
-                $files
+    protected function addMappingFiles($type, array $files)
+    {
+        if (!in_array($type, ['yml', 'xml'])) {
+            return;
+        }
+
+        if (empty($files)) {
+            return;
+        }
+
+        $container = $this->getContainer();
+
+        foreach($files as $file) {
+            $container->addResource(new FileResource($file));
+        }
+
+        // introduced in symfony 2.5
+        if ($container->hasDefinition('validator.builder')) {
+            $builderMethodMap = array(
+                'xml' => 'addXmlMappings',
+                'yml' => 'addYamlMappings',
             );
 
-            $container->setParameter($mappingFilesKey, $files);
+            $container->getDefinition('validator.builder')->addMethodCall($builderMethodMap[$type], array($files));
+
+            return;
         }
+
+        // old way of loading validation files
+
+        $mappingFilesKey = $this->getMappingKey($type);
+
+        if (!$container->hasParameter($mappingFilesKey)) {
+            return;
+        }
+
+        $files = array_merge(
+            $container->getParameter($mappingFilesKey),
+            $files
+        );
+
+        $container->setParameter($mappingFilesKey, $files);
     }
 
     /**
